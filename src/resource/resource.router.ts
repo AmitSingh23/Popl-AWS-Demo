@@ -1,5 +1,5 @@
 
-import { Router, Request, Response } from 'express';
+import express, { Router, Request, Response } from 'express';
 import { Resource } from './Resource';
 import { QueueService } from '../aws/QueueService';
 
@@ -7,12 +7,14 @@ const resourceRouter = Router()
 
 const queueService: QueueService = new QueueService();
 
+resourceRouter.use(express.json());
 resourceRouter.post('/', async (req: Request, res: Response) => {
-    const resource = req.body.resource as Resource
+    const resource = req.body.resource
 
-    await queueService.sendMessage(process.env.QUEUE_URL, JSON.stringify(resource));
+    let result = await queueService.sendMessage(process.env.QUEUE_URL, JSON.stringify(resource));
 
-    res.json({message: 'Message sent'});
+    // todo: this is a bad return object
+    res.send(result);
 })
 
 export default resourceRouter;

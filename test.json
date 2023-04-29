@@ -1,0 +1,18 @@
+
+
+	
+{
+    "resource": "/resource/",
+    "path": "/resource/",
+    "httpMethod": "POST",
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "body" : {
+        "resource": {
+            "id": "1", 
+            "nickname": "first-resource", 
+            "type": "resource"
+        }
+    }
+ }

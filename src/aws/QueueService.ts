@@ -17,12 +17,15 @@ export class QueueService {
       QueueUrl: queueUrl,
     };
   
+    let result = null;
     try {
-      const result = await this.sqs.sendMessage(params).promise();
+      result = await this.sqs.sendMessage(params).promise();
       console.log(`Message sent to ${queueUrl} with ID ${result.MessageId}`);
     } catch (error) {
       console.error(`Error sending message to ${queueUrl}: ${error}`);
     }
+
+    return result;
   };
   
 }
