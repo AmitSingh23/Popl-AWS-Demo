@@ -10,5 +10,16 @@ functions:
           path: /
           method: any
           cors: true
+      - http:
+          path: /resource
+          method: post
+          cors: true
 plugins:
   - serverless-offline
+
+resources:
+  Resources:
+    ResourceQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: resource-queue
