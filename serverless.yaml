@@ -1,7 +1,7 @@
 service: my-express-app
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
 functions:
   app:
     handler: dist/index.handler
