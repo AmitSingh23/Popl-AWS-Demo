@@ -18,6 +18,15 @@ functions:
           method: post
           cors: true
           async: true
+  consumer:
+    handler: dist/consumer.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - ResourceQueue
+              - Arn
+
 plugins:
   - serverless-offline
 
@@ -27,3 +36,9 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: resource-queue
+
+# need to exclude packages to keep lambda zip small
+package:
+  patterns:
+    - '!terraform/**'
+    - 'src/**'
