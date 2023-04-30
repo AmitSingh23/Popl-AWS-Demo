@@ -19,7 +19,26 @@ functions:
           cors: true
           async: true
   consumer:
+    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
     handler: dist/consumer.handler
+
+    environment:
+      DB_HOST: ${env:DB_HOST}
+      DB_USER: ${env:DB_USER}
+      DB_PASSWORD: ${env:DB_PASSWORD}
+      DB_NAME: ${env:DB_NAME}
+
+    # add the default security group and subnet ids so that it can talk to the RDS instance
+    vpc:
+      securityGroupIds:
+        - sg-03adf4b71a42b5a0b
+      subnetIds:
+        - subnet-02b125992f5d0c05b
+        - subnet-061cf7cf8c4d5dba4
+        - subnet-015b5fc6ca0832943
+        - subnet-0669813dced0050cf
+        - subnet-070c2a47fc79821fc
+        - subnet-01dd93bdf39967f76
     events:
       - sqs:
           arn:

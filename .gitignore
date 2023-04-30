@@ -142,6 +142,9 @@ dist
 .svelte-kit
 
 # terraform 
-terraform/
+terraform/**
+!terraform/main.tf
+!terraform/variables.tf
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+src/.DS_Store
