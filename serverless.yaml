@@ -1,8 +1,43 @@
-service: my-express-app
+service: demo-app
 provider:
   name: aws
   runtime: nodejs18.x
 functions:
+  resource:
+    handler: dist/db/router/ResourceApi.handler
+    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
+    environment: 
+      DB_HOST: ${env:DB_HOST}
+      DB_USER: ${env:DB_USER}
+      DB_PASSWORD: ${env:DB_PASSWORD}
+      DB_NAME: ${env:DB_NAME}
+
+    # todo: this is shared already, make it global
+    vpc:
+      securityGroupIds:
+        - sg-03adf4b71a42b5a0b
+      subnetIds:
+        - subnet-02b125992f5d0c05b
+        - subnet-061cf7cf8c4d5dba4
+        - subnet-015b5fc6ca0832943
+        - subnet-0669813dced0050cf
+        - subnet-070c2a47fc79821fc
+        - subnet-01dd93bdf39967f76
+    events:
+      - http:
+          path: /resource/
+          method: get
+          cors: true
+          async: true
+      - http:
+          path: /resource/{id}
+          method: get
+          cors: true
+          async: true
+          request:
+            parameters:
+              paths:
+                id: true
   app:
     handler: dist/index.handler
     role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}

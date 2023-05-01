@@ -1,6 +1,5 @@
 
 import express, { Router, Request, Response } from 'express';
-import { Resource } from './Resource';
 import { QueueService } from '../aws/QueueService';
 
 const resourceRouter = Router()
