@@ -1,3 +1,5 @@
+useDotenv: true
+
 service: demo-app
 provider:
   name: aws
@@ -83,6 +85,7 @@ functions:
 
 plugins:
   - serverless-offline
+  - serverless-dotenv-plugin
 
 resources:
   Resources:

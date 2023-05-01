@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^18.16.3",
+    "serverless-dotenv-plugin": "^6.0.0",
     "typescript": "^5.0.4"
   }
 }
