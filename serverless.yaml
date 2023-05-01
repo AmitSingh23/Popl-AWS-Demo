@@ -1,14 +1,105 @@
-service: my-express-app
+useDotenv: true
+
+service: demo-app
 provider:
   name: aws
   runtime: nodejs18.x
 functions:
-  app:
-    handler: dist/index.handler
+  resource-service:
+    handler: dist/functions/resource-service/index.handler
+    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
+    environment: 
+      DB_HOST: ${self:custom.rds-credentials.host}
+      DB_USER: ${self:custom.rds-credentials.user}
+      DB_PASSWORD: ${self:custom.rds-credentials.password}
+      DB_NAME: ${self:custom.rds-credentials.database}
+
+    # todo: this is shared already, make it global
+    vpc:
+      securityGroupIds:
+        - sg-03adf4b71a42b5a0b
+      subnetIds:
+        - subnet-02b125992f5d0c05b
+        - subnet-061cf7cf8c4d5dba4
+        - subnet-015b5fc6ca0832943
+        - subnet-0669813dced0050cf
+        - subnet-070c2a47fc79821fc
+        - subnet-01dd93bdf39967f76
+    events:
+      - http:
+          path: /resource/
+          method: get
+          cors: true
+          async: true
+      - http:
+          path: /resource/{id}
+          method: get
+          cors: true
+          async: true
+          request:
+            parameters:
+              paths:
+                id: true
+  producer:
+    handler: dist/functions/producer/index.handler
+    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
+    environment:
+      QUEUE_URL: !GetAtt ResourceQueue.QueueUrl
     events:
       - http:
           path: /
           method: any
           cors: true
+      - http:
+          path: /resource
+          method: post
+          cors: true
+          async: true
+  consumer:
+    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
+    handler: dist/functions/consumer/consumer.handler
+
+    environment:
+      DB_HOST: ${self:custom.rds-credentials.host}
+      DB_USER: ${self:custom.rds-credentials.user}
+      DB_PASSWORD: ${self:custom.rds-credentials.password}
+      DB_NAME: ${self:custom.rds-credentials.database}
+
+    # add the default security group and subnet ids so that it can talk to the RDS instance
+    vpc:
+      securityGroupIds:
+        - sg-03adf4b71a42b5a0b
+      subnetIds:
+        - subnet-02b125992f5d0c05b
+        - subnet-061cf7cf8c4d5dba4
+        - subnet-015b5fc6ca0832943
+        - subnet-0669813dced0050cf
+        - subnet-070c2a47fc79821fc
+        - subnet-01dd93bdf39967f76
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - ResourceQueue
+              - Arn
+
 plugins:
   - serverless-offline
+  - serverless-dotenv-plugin
+
+resources:
+  Resources:
+    ResourceQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: resource-queue
+
+# need to exclude packages to keep lambda zip small
+package:
+  patterns:
+    - '!terraform/**'
+    - 'src/**'
+    - 'diagrams/**'
+
+custom:
+  rds-credentials: ${ssm:/aws/reference/secretsmanager/${env:RDS_CREDENTIALS_SECRET_KEY}}
