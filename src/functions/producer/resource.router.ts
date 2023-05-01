@@ -1,6 +1,6 @@
 
 import express, { Router, Request, Response } from 'express';
-import { QueueService } from '../aws/QueueService';
+import { QueueService } from '../../shared/aws/QueueService';
 
 const resourceRouter = Router()
 

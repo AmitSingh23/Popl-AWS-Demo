@@ -1,6 +1,6 @@
 import { SQSEvent } from 'aws-lambda';
-import Resource from './db/resource/model/Resource';
-import resourceRepository from './db/resource/repository/ResourceRepository';
+import Resource from '../../db/resource/model/Resource';
+import resourceRepository from '../../db/resource/repository/ResourceRepository';
 
 export const handler = async (event: SQSEvent): Promise<void> => {
   for (const record of event.Records) {

@@ -3,8 +3,8 @@ provider:
   name: aws
   runtime: nodejs18.x
 functions:
-  resource:
-    handler: dist/db/router/ResourceApi.handler
+  resource-service:
+    handler: dist/functions/resource-service/index.handler
     role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
     environment: 
       DB_HOST: ${env:DB_HOST}
@@ -38,8 +38,8 @@ functions:
             parameters:
               paths:
                 id: true
-  app:
-    handler: dist/index.handler
+  producer:
+    handler: dist/functions/producer/index.handler
     role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
     environment:
       QUEUE_URL: !GetAtt ResourceQueue.QueueUrl
@@ -55,7 +55,7 @@ functions:
           async: true
   consumer:
     role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
-    handler: dist/consumer.handler
+    handler: dist/functions/consumer/consumer.handler
 
     environment:
       DB_HOST: ${env:DB_HOST}

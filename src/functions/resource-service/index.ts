@@ -1,6 +1,6 @@
 import express from 'express';
 import serverless from 'serverless-http';
-import resourceRepository from '../resource/repository/ResourceRepository';
+import resourceRepository from '../../db/resource/repository/ResourceRepository';
 
 const app = express();
 

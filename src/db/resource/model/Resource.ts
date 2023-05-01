@@ -1,5 +1,5 @@
 import { Table, Column, CreatedAt, UpdatedAt, DataType, Model } from "sequelize-typescript";
-import { Resource } from "../../../resource/Resource";
+import { Resource } from "../../../shared/resource/Resource";
 
 @Table({
     timestamps: true,

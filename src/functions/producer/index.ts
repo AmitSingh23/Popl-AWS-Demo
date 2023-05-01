@@ -1,7 +1,7 @@
 import express from 'express';
 import serverless from 'serverless-http';
 
-import resourceRouter from './resource/resource.router';
+import resourceRouter from './resource.router';
 
 const app = express();
 
