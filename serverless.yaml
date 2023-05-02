@@ -4,10 +4,37 @@ service: demo-app
 provider:
   name: aws
   runtime: nodejs18.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - "sqs:*"
+            - "logs:CreateLogGroup"
+            - "logs:CreateLogStream"
+            - "logs:PutLogEvents"
+          Resource: "*"
+
+        - Effect: Allow
+          Action: ec2:*
+          Resource: "*"
+
+        - Effect: Allow
+          Action: "elasticloadbalancing:*"
+          Resource: "*"
+
+        - Effect: Allow
+          Action: "cloudwatch:*"
+          Resource: "*"
+
+        - Effect: Allow
+          Action: "autoscaling:*"
+          Resource: "*"
+
+          
 functions:
   resource-service:
     handler: dist/functions/resource-service/index.handler
-    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
     environment: 
       DB_HOST: ${self:custom.rds-credentials.host}
       DB_USER: ${self:custom.rds-credentials.user}
@@ -40,7 +67,6 @@ functions:
                 id: true
   producer:
     handler: dist/functions/producer/index.handler
-    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
     environment:
       QUEUE_URL: !GetAtt ResourceQueue.QueueUrl
     events:
@@ -53,7 +79,6 @@ functions:
           method: post
           cors: true
   consumer:
-    role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
     handler: dist/functions/consumer/consumer.handler
 
     environment:
