@@ -30,12 +30,10 @@ functions:
           path: /resource/
           method: get
           cors: true
-          async: true
       - http:
           path: /resource/{id}
           method: get
           cors: true
-          async: true
           request:
             parameters:
               paths:
@@ -54,7 +52,6 @@ functions:
           path: /resource
           method: post
           cors: true
-          async: true
   consumer:
     role: arn:aws:iam::${env:AWS_ACCOUNT_ID}:role/${env:AWS_LAMBDA_ROLE}
     handler: dist/functions/consumer/consumer.handler
