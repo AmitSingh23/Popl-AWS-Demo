@@ -3,6 +3,7 @@ import AWS, { SQS }  from 'aws-sdk';
 export class QueueService {
   private sqs: SQS;
 
+  // constructor takes in this optional parameter to allow for passing in mocks
   constructor(sqs?: SQS) {
     if (sqs) {
       this.sqs = sqs;

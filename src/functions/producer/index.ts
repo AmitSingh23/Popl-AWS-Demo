@@ -7,11 +7,6 @@ const app = express();
 
 app.use(express.json());
 
-app.get('/', (req: any, res: any) => {
-  console.log('this shoudlnt happen');
-  res.json({ message: 'Hello, world!' });
-});
-
 app.use('/resource', resourceRouter);
 
 export const handler = serverless(app);

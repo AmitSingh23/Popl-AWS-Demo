@@ -12,7 +12,12 @@ resourceRouter.post('/', async (req: Request, res: Response) => {
 
     let result = await queueService.sendMessage(process.env.QUEUE_URL, JSON.stringify(resource));
 
-    // todo: this is a bad return object
+    if (result == null) {
+        res.statusCode = 500;
+        res.json({'message': 'Unable to send message to queue, an error occurred'});
+        return;
+    }
+
     res.send(result);
 })
 
