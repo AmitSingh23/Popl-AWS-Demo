@@ -7,9 +7,9 @@
     },
     "body" : {
         "resource": {
-            "name": "1", 
-            "nickname": "first-resource", 
-            "type": "resource"
+            "name": "stuff-bucket", 
+            "nickname": "Bucket that will store data", 
+            "type": "s3-bucket"
         }
     }
  }

@@ -8,7 +8,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
 
     try {
       // todo: do some validatino to verify that field is of the right type
-      const resource = await resourceRepository.create({body});
+      const resource = await resourceRepository.create({name: body.name, nickname: body.nickname, type: body.type});
       await resource.save();
     } catch (error: any) {
       console.error('An error ocurred while creating the new Resource object', error);
