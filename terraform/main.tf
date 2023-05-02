@@ -15,13 +15,18 @@ resource "aws_db_instance" "demo_resource_db" {
 }
 
 resource "aws_secretsmanager_secret" "db_credentials" {
-  name = "demo-db-credentials"
+  name = "demo-rds-credentials"
+  depends_on = [ aws_db_instance.demo_resource_db ]
 }
 
 resource "aws_secretsmanager_secret_version" "db_credentials_version" {
   secret_id     = aws_secretsmanager_secret.db_credentials.id
   secret_string = jsonencode({
-    username = var.db_user
+    user = var.db_user
     password = var.db_password
+    host = aws_db_instance.demo_resource_db.address
+    database = aws_db_instance.demo_resource_db.db_name
   })
+
+  depends_on = [ aws_secretsmanager_secret.db_credentials ]
 }
