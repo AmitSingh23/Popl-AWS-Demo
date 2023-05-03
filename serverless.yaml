@@ -9,28 +9,17 @@ provider:
       statements:
         - Effect: Allow
           Action:
-            - "sqs:*"
-            - "logs:CreateLogGroup"
-            - "logs:CreateLogStream"
-            - "logs:PutLogEvents"
+            - sqs:*
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
           Resource: "*"
-
         - Effect: Allow
-          Action: ec2:*
+          Action:
+            - ec2:CreateNetworkInterface
+            - ec2:DescribeNetworkInterfaces
+            - ec2:DeleteNetworkInterface
           Resource: "*"
-
-        - Effect: Allow
-          Action: "elasticloadbalancing:*"
-          Resource: "*"
-
-        - Effect: Allow
-          Action: "cloudwatch:*"
-          Resource: "*"
-
-        - Effect: Allow
-          Action: "autoscaling:*"
-          Resource: "*"
-
           
 functions:
   resource-service:
@@ -40,18 +29,9 @@ functions:
       DB_USER: ${self:custom.rds-credentials.user}
       DB_PASSWORD: ${self:custom.rds-credentials.password}
       DB_NAME: ${self:custom.rds-credentials.database}
-
-    # todo: this is shared already, make it global
     vpc:
-      securityGroupIds:
-        - sg-03adf4b71a42b5a0b
-      subnetIds:
-        - subnet-02b125992f5d0c05b
-        - subnet-061cf7cf8c4d5dba4
-        - subnet-015b5fc6ca0832943
-        - subnet-0669813dced0050cf
-        - subnet-070c2a47fc79821fc
-        - subnet-01dd93bdf39967f76
+      securityGroupIds: ${self:custom.vpc.securityGroupId}
+      subnetIds: ${self:custom.vpc.subnetIds}
     events:
       - http:
           path: /resource/
@@ -80,7 +60,6 @@ functions:
           cors: true
   consumer:
     handler: dist/functions/consumer/consumer.handler
-
     environment:
       DB_HOST: ${self:custom.rds-credentials.host}
       DB_USER: ${self:custom.rds-credentials.user}
@@ -88,16 +67,10 @@ functions:
       DB_NAME: ${self:custom.rds-credentials.database}
 
     # add the default security group and subnet ids so that it can talk to the RDS instance
+    # terraform is responsible for saving the default network info in the secret manager
     vpc:
-      securityGroupIds:
-        - sg-03adf4b71a42b5a0b
-      subnetIds:
-        - subnet-02b125992f5d0c05b
-        - subnet-061cf7cf8c4d5dba4
-        - subnet-015b5fc6ca0832943
-        - subnet-0669813dced0050cf
-        - subnet-070c2a47fc79821fc
-        - subnet-01dd93bdf39967f76
+      securityGroupIds: ${self:custom.vpc.securityGroupId}
+      subnetIds: ${self:custom.vpc.subnetIds}
     events:
       - sqs:
           arn:
@@ -125,3 +98,4 @@ package:
 
 custom:
   rds-credentials: ${ssm:/aws/reference/secretsmanager/${env:RDS_CREDENTIALS_SECRET_KEY}}
+  vpc: ${ssm:/aws/reference/secretsmanager/${env:VPC_INFO_SECRET_KEY}}

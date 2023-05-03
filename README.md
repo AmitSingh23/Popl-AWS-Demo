@@ -6,9 +6,10 @@ This demo app is designed to be completely reproducible. To that effect, there a
 serverless handles all of the infrastructure for lambda specific functionality (via CloudFormation).
 
 In order to setup, you will first need to export your AWS credentials to the console. In order to set everything up, you'll need
-permissions to create Lambdas, API Gateways, RDS instances, and SQS instances
+permissions to create Lambdas, API Gateways, RDS instances, and SQS instances; and to retrieve VPC information
 
-At a high level, first, we created the shared services (terraform), then we create the serverless architecture and spin the lambdas up.
+At a high level, first, we created the shared services (terraform, rds secret credentials, and vpc info secret), then we create 
+the serverless architecture and spin the lambdas up.
 
 To do this, you'll need to run the following 
 
@@ -34,7 +35,7 @@ POST /resource
 }
 ```
 
-An example event can be found in event, which can be run with 
+An example event can be found in events/test-producer.json, which can be run with 
 
 ```
 sls invoke --function producer --path events/test-producer.json 
@@ -61,7 +62,9 @@ sls invoke --function resource-service --path events/test-resource.json
 
 ### Producer
 
-Writes a message to the specified SQS queue-- expected to be in the format of the `Resource` interface
+Writes a message to the specified SQS queue-- expected to be in the format of the `Resource` interface. This writes to a queue instead of writing 
+to the database directly is because this is just a demo. This is meant to mock a more process-intensive function call that takes too long to 
+immediately write to the database, so it uses a queue so that the consumer can asynchronously process the data
 
 ### Consumer
 
@@ -69,8 +72,10 @@ Reads a message from the SQS queue and writes it into a MySQL RDS instance
 
 ### Resource-Service 
 
-API that exposes Resource objects to the user from the database
+API that exposes Resource objects to the user from the database. Although the producer and this both have resource endpoints and it could make sense 
+to put them both in the same lambda, they do different things. Similarly, this function has a database dependency which affects cold start startup time.
+By having the producer be a separate lambda, it isn't dependent on the database connection and has faster cold starts
 
-### Architecture
+## Architecture
 
 ![Architecture Diagram](diagrams/architecture.png)

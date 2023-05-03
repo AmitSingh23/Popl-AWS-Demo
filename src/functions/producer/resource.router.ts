@@ -18,7 +18,7 @@ resourceRouter.post('/', async (req: Request, res: Response) => {
         return;
     }
 
-    res.send(result);
+    res.send({'message': 'Message successfully added to queue'});
 })
 
 export default resourceRouter;
