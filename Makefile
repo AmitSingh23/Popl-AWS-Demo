@@ -11,5 +11,10 @@ up: tf deploy
 	
 
 destroy:
-	terraform destroy
+	cd terraform && terraform destroy
 	sls remove
+
+setup:
+	npm i -y
+	cd terraform && terraform init
+	echo 'RDS_CREDENTIALS_SECRET_KEY=rds-connection-credentials\nVPC_INFO_SECRET_KEY=vpc_info' > .env
