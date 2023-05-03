@@ -95,3 +95,11 @@ By having the producer be a separate lambda, it isn't dependent on the database 
 ## Architecture
 
 ![Architecture Diagram](diagrams/architecture.png)
+
+## Known Issues 
+
+- When the system loads up for the first time, and the tables haven't been created yet, the first call to the producer will send a message to the queue, but when the queue reads it, it'll fail. This happens because the schema doesn't exist yet, so the call to create fails, then the schema is created (because the intiialization code is called), and then the message is deleted without ever successfully passing. 
+    - There are a few solutions to this. One would be always checking for initialization before doing anything in that handler. This is an okay solution but could add additional unnecessary overhead. A better solution would be using db migrations to handle the schema but that's out of scope for the purposes of this project. So for now, just call the producer again after the first call and it should go through fine. 
+- When you destroy the system (with `make destroy`), it causes the secrets to be deleted as well. If you try to spin it back up, it will yell that the secrets can't be created because they're pending deletion. This is because AWS doesn't allow secrets to be deleted immediately; there needs to be a notice period of at least 7 days. Because of this, you can't create another secret with that same id until the notice period is expired or use the old secret during that period 
+    - The solution to this is changing the secret name-- you'll have to change them in `terraform/main.tf` in `aws_secretsmanager_secret.vpc_info.name` and `aws_secretsmanager_secret.db_credentials.name` as well as the secret key names in your env file in `.env`
+    - This is less of a bug but still a bit of a gotcha and worth noting
