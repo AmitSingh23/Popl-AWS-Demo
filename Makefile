@@ -11,8 +11,8 @@ up: tf deploy
 	
 
 destroy:
-	cd terraform && terraform destroy
 	sls remove
+	cd terraform && terraform destroy
 
 setup:
 	npm i -g serverless
