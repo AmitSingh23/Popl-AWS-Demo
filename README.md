@@ -5,19 +5,35 @@
 This demo app is designed to be completely reproducible. To that effect, there are terraform scripts for shared services and 
 serverless handles all of the infrastructure for lambda specific functionality (via CloudFormation).
 
-In order to setup, you will first need to export your AWS credentials to the console. In order to set everything up, you'll need
-permissions to create Lambdas, API Gateways, RDS instances, and SQS instances; and to retrieve VPC information
+In order to setup, you will need to export your AWS credentials to the shel with permissions to create Lambdas, API Gateways, 
+RDS instances, and SQS instances; and to retrieve VPC information
 
 At a high level, first, we created the shared services (terraform, rds secret credentials, and vpc info secret), then we create 
 the serverless architecture and spin the lambdas up.
 
-To do this, you'll need to run the following 
+Before you can run the app, you'll first need to export your AWS credentials to the shell
+
+```
+export AWS_ACCESS_KEY_ID=<your-key>
+export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>
+
+```
+
+If this is your first time deploying the system, first run 
+
+```
+make setup
+```
+
+This will install the necessary dependencies, initialize terraform, and create the `.env` file for you
+
+Now run the following: 
 
 ```
 make up
 ```
 
-This will create and deploy everything needed
+This will create and deploy everything needed. Follow the interactive prompts with terraform-- the password it's asking for is what the master password for the RDS instance will be. You won't need to enter this anywhere, it'll get put into a secret and loaded by the lambdas automatically
 
 ## Usage
 
