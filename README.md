@@ -74,7 +74,7 @@ Reads a message from the SQS queue and writes it into a MySQL RDS instance
 
 API that exposes Resource objects to the user from the database. Although the producer and this both have resource endpoints and it could make sense 
 to put them both in the same lambda, they do different things. Similarly, this function has a database dependency which affects cold start startup time.
-By having the producer be a separate lambda, it isn't dependent on the database connection and suffers from cold starts less 
+By having the producer be a separate lambda, it isn't dependent on the database connection and has faster cold starts
 
 ## Architecture
 
