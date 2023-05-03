@@ -1,5 +1,11 @@
 # Popl-AWS-Demo
 
+## Pre-Requisites
+
+- Terraform
+- npm 
+- AWS Account and access keys
+
 ## Setup Instructions
 
 This demo app is designed to be completely reproducible. To that effect, there are terraform scripts for shared services and 
