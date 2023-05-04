@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@opensearch-project/opensearch": "^2.2.1",
     "aws-lambda": "^1.0.7",
     "express": "^4.18.2",
     "mysql2": "^3.2.4",

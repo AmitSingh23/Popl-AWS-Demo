@@ -64,3 +64,35 @@ resource "aws_secretsmanager_secret_version" "db_credentials_version" {
 
   depends_on = [ aws_secretsmanager_secret.db_credentials ]
 }
+
+# Note: this is slow! It took 16 minutes to construct-- I thought that was an error but it seems that it's expected (although undesirable) behavior
+resource "aws_opensearch_domain" "resources" {
+  domain_name           = "resources"
+
+  # using OS as the engine instead of ES because AWS only supports version 7 (probably because ES is not open source anymore)
+  engine_version        = "OpenSearch_2.5"
+
+  cluster_config {
+    instance_type = "t3.small.search"
+  }
+
+  vpc_options {
+    subnet_ids = [
+      data.aws_subnets.all.ids[0],
+    ]
+    security_group_ids = [data.aws_security_group.sg.id]
+  }
+
+  # since we are using a t3.small instance, we need to add a volume 
+  ebs_options {
+    ebs_enabled = true
+    volume_size = 10
+  }
+}
+
+resource "aws_ssm_parameter" "opensearch_host_name" {
+  name        = "/resource/opensearch-hostname"
+  description = "Hostname of OpenSearch instance for resource store"
+  type        = "String"
+  value       = aws_opensearch_domain.resources.endpoint
+}
