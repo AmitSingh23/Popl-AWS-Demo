@@ -65,6 +65,7 @@ functions:
       DB_USER: ${self:custom.rds-credentials.user}
       DB_PASSWORD: ${self:custom.rds-credentials.password}
       DB_NAME: ${self:custom.rds-credentials.database}
+      OPENSEARCH_ENDPOINT: ${ssm:/resource/opensearch-hostname}
 
     # add the default security group and subnet ids so that it can talk to the RDS instance
     # terraform is responsible for saving the default network info in the secret manager
