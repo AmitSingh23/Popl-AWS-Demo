@@ -8,7 +8,6 @@ export class OpenSearchService {
     private client: Client
 
     constructor() {
-        console.log('endpoint: ', process.env.OPENSEARCH_ENDPOINT)
         this.client = new Client({node: `https://${process.env.OPENSEARCH_ENDPOINT}`});
     }
 
@@ -19,5 +18,20 @@ export class OpenSearchService {
             body: message,
             refresh: true,
         });
+    }
+
+    async getDocuments(from: number, size: number): Promise<Record<string, any>> {
+        let response = await this.client.search({
+            index: OpenSearchService.indexName,
+            body: {
+                from: from,
+                size: size,
+                query: {
+                    matchAll: {}
+                }
+            }
+        });
+
+        return response.body
     }
 }
